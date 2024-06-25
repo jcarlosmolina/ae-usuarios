@@ -160,7 +160,7 @@ metadata:
   annotations:
     isFromDevFile: 'true'
 spec:
-  host: ae-ae-usuarios-TODO-SPECIFY-OPENSHIFT-NAMESPACE-DEPLOYMENT-URL
+  host: ae-ae-usuarios-jcmintegranova-dev.apps.sandbox-m2.ll9k.p1.openshiftapps.com
   to:
     kind: Service
     name: ae-ae-usuarios

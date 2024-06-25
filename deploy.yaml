@@ -1,0 +1,222 @@
+kind: Secret
+apiVersion: v1
+metadata:
+  name: ae-secret
+data:
+  db-password: SW50M2dyNG4wdjQ=
+  db-username: SW50ZWdyYW5vdmE=
+type: Opaque
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: ae-config
+data:
+  ae-apigateway-database-jdbc-url: 'COMPLETE'
+  ae-apigateway-url: 'https://ae-ae:8080'
+  ae-usuarios-database-jdbc-url: 'COMPLETE'
+  ae-usuarios-url: 'https://ae-ae-usuarios:8081'
+  ae-configuraciones-database-jdbc-url: 'COMPLETE'
+  ae-configuraciones-url: 'https://ae-ae-configuraciones:8082'
+  ae-reportes-database-jdbc-url: 'COMPLETE'
+  ae-reportes-url: 'https://ae-ae-reportes:8083'
+  ae-firmas-database-jdbc-url: 'COMPLETE'
+  ae-firmas-url: 'https://ae-ae-firmas:8084'
+  ae-personas-afiliados-contratantes-database-jdbc-url: 'COMPLETE'
+  ae-personas-afiliados-contratantes-url: 'https://ae-ae-personas-afiliados-contratantes:8085'
+  ae-solicitudes-database-jdbc-url: 'COMPLETE'
+  ae-solicitudes-url: 'https://ae-ae-solicitudes:8086'
+  ae-novedades-database-jdbc-url: 'COMPLETE'
+  ae-novedades-url: 'https://ae-ae-novedades:8087'
+  ae-generasolicitud-database-jdbc-url: 'COMPLETE'
+  ae-generasolicitud-url: 'https://ae-ae-generasolicitud:8088'
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: ae-ae-usuarios
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ae-ae-usuarios
+  template:
+    metadata:
+      labels:
+        app: ae-ae-usuarios
+    spec:
+      containers:
+        - name: ae-ae-usuarios
+          image: ae-ae-usuarios:latest
+          ports:
+            - name: http
+              containerPort: 8081
+              protocol: TCP
+          env:
+          - name: quarkus.datasource.jdbc.url
+            valueFrom:
+              configMapKeyRef:
+                name: ae-config
+                key: ae-usuarios-database-jdbc-url
+          - name: quarkus.datasource.username
+            valueFrom:
+              secretKeyRef:
+                name: ae-secret
+                key: db-username
+          - name: quarkus.datasource.password
+            valueFrom:
+              secretKeyRef:
+                name: ae-secret
+                key: db-password
+          - name: quarkus.rest-client.ae.url
+            valueFrom:
+              secretKeyRef:
+                name: ae-config
+                key: ae-ae-url
+          - name: quarkus.rest-client.ae-usuarios.url
+            valueFrom:
+              secretKeyRef:
+                name: ae-config
+                key: ae-ae-usuarios-url
+          - name: quarkus.rest-client.ae-configuraciones.url
+            valueFrom:
+              secretKeyRef:
+                name: ae-config
+                key: ae-ae-configuraciones-url
+          - name: quarkus.rest-client.ae-reportes.url
+            valueFrom:
+              secretKeyRef:
+                name: ae-config
+                key: ae-ae-reportes-url
+          - name: quarkus.rest-client.ae-firmas.url
+            valueFrom:
+              secretKeyRef:
+                name: ae-config
+                key: ae-ae-firmas-url
+          - name: quarkus.rest-client.ae-personas-afiliados-contratantes.url
+            valueFrom:
+              secretKeyRef:
+                name: ae-config
+                key: ae-ae-personas-afiliados-contratantes-url
+          - name: quarkus.rest-client.ae-solicitudes.url
+            valueFrom:
+              secretKeyRef:
+                name: ae-config
+                key: ae-ae-solicitudes-url
+          - name: quarkus.rest-client.ae-novedades.url
+            valueFrom:
+              secretKeyRef:
+                name: ae-config
+                key: ae-ae-novedades-url
+          - name: quarkus.rest-client.ae-generasolicitud.url
+            valueFrom:
+              secretKeyRef:
+                name: ae-config
+                key: ae-ae-generasolicitud-url
+          resources:
+            requests:
+              memory: "100Mi"
+              cpu: "10m"
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: ae-ae-usuarios
+  labels:
+    app: ae-ae-usuarios
+    app.kubernetes.io/component: ae-ae-usuarios
+    app.kubernetes.io/instance: ae-ae-usuarios
+    app.kubernetes.io/name: ae-ae-usuarios
+    app.kubernetes.io/part-of: ae-app
+    app.openshift.io/runtime: ae-ae-usuarios
+  annotation:
+    app.openshift.io/vcs-ref: ''
+    app.openshift.io/vcs-uri: 'TODO: SPECIFY CODE REPOSITORY URL'
+    isFromDevfile: 'true'
+spec:
+  ports:
+    - name: http-8081
+      port: 8081
+      protocol: TCP
+      targetPort: 8081
+  internalTrafficPolicy: Cluster
+  ipFamilyPolicy: SingleStack
+  sesssionAffinity: None
+  selector:
+    app: ae-ae-usuarios
+    deployment: ae-ae-usuarios
+---
+kind: Route
+apiVersion: route.openshift.io/v1
+metadata:
+  name: ae-ae-usuarios
+  labels:
+    app: ae-ae-usuarios
+    app.kubernetes.io/component: ae-ae-usuarios
+    app.kubernetes.io/instance: ae-ae-usuarios
+    app.kubernetes.io/name: ae-ae-usuarios
+    app.kubernetes.io/part-of: ae-app
+    app.openshift.io/runtime: ae-ae-usuarios
+  annotations:
+    isFromDevFile: 'true'
+spec:
+  host: ae-ae-usuarios-TODO-SPECIFY-OPENSHIFT-NAMESPACE-DEPLOYMENT-URL
+  to:
+    kind: Service
+    name: ae-ae-usuarios
+    weight: 100
+  port:
+    targetPort: '8081'
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect
+  wildcardPolicy: None
+---
+kind: ImageStream
+apiVersion: image.openshift.io/v1
+metadata:
+  annotations:
+    app.openshift.io/vcs-ref: ''
+    app.openshift.io/vcs-uri: 'TODO: SPECIFY CODE REPOSITORY URL'
+  name: ae-ae-usuarios
+  labels:
+    app: ae-ae-usuarios
+    app.kubernetes.io/component: ae-ae-usuarios
+    app.kubernetes.io/instance: ae-ae-usuarios
+    app.kubernetes.io/name: ae-ae-usuarios
+    app.kubernetes.io/part-of: ae-app
+    app.openshift.io/runtime: ae-ae-usuarios
+spec:
+  lookupPolicy:
+    local: false
+---
+kind: BuildConfig
+apiVersion: build.openshift.io/v1
+metadata:
+  name: ae-ae-usuarios
+  labels:
+    app: ae-ae-usuarios
+    app.kubernetes.io/component: ae-ae-usuarios
+    app.kubernetes.io/instance: ae-ae-usuarios
+    app.kubernetes.io/name: ae-ae-usuarios
+    app.kubernetes.io/part-of: ae-app
+    app.openshift.io/runtime: ae-ae-usuarios
+spec:
+  nodeSelector: null
+  output:
+    to:
+      kind: ImageStreamTag
+      name: 'ae-ae-usuarios:latest'
+  resources: {}
+  successfulBuildsHistoryLimit: 5
+  failedBuildsHistoryLimit: 5
+  strategy:
+    type: Docker
+    dockerStrategy:
+      dockerfilePath: src/main/docker/Dockerfile.jvm.staged
+  postCommit: {}
+  source:
+    type: Git
+    git:
+      uri: 'TODO: SPECIFY CODE REPOSITORY URL'
+  runPolicy: Serial

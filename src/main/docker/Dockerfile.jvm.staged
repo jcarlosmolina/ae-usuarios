@@ -20,7 +20,7 @@ USER root
 WORKDIR /build
 
 COPY ./src src
-END MAVEN_OPTS="-Xmx512m"
+ENV MAVEN_OPTS="-Xmx512m"
 RUN mvn package -Dmaven.tests.skip=true
 
 RUN grep version /target/maven-archiver/pom.properties | cut -d '=' -f2 >.env-version

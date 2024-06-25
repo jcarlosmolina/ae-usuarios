@@ -19,6 +19,9 @@ FROM registry.access.redhat.com/ubi8/openjdk-17:1.16
 USER root
 WORKDIR /build
 
+COPY ./pom.xml
+RUN mvn dependency:go-offline
+
 COPY ./src src
 ENV MAVEN_OPTS="-Xmx512m"
 RUN mvn package -Dmaven.tests.skip=true

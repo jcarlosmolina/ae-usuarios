@@ -1,3 +1,4 @@
+###
 # This Dockerfile is used in order to build a container that runs the Quarkus application in JVM mode
 #
 # Build the image with:
@@ -14,6 +15,8 @@
 # Then run the container using :
 #
 # docker run -i --rm -p 8081:8081 balentziarra/ae-usuarios-jvm
+#
+###
 FROM registry.access.redhat.com/ubi8/openjdk-17:1.16
 
 USER root
@@ -42,12 +45,10 @@ FROM registry.access.redhat.com/ubi8/openjdk-17:1.16
 ENV JAVA_OPTS="-Dquarkus.http.host=0.0.0.0 -Dquarkus.http.port=8081 -Djava.util.logging.manager=org.jboss.logmanager.LogManager"
 
 # We make four distinct layers so if there are application changes the library layers can be re-used
-COPY --chown=1001 /build/target/quarkus-app/lib/ /deployments/lib/
-COPY --chown=1001 /build/target/quarkus-app/*.jar /deployments/export-run-artifact.jar
-COPY --chown=1001 /build/target/quarkus-app/app/ /deployments/app/
-COPY --chown=1001 /build/target/quarkus-app/quarkus/ /deployments/quarkus/
+COPY --from=0 --chown=1001 /build/target/quarkus-app/lib/ /deployments/lib/
+COPY --from=0 --chown=1001 /build/target/quarkus-app/*.jar /deployments/export-run-artifact.jar
+COPY --from=0 --chown=1001 /build/target/quarkus-app/app/ /deployments/app/
+COPY --from=0 --chown=1001 /build/target/quarkus-app/quarkus/ /deployments/quarkus/
 
 EXPOSE 8081
 ENTRYPOINT ["/opt/jboss/container/java/run/run-java.sh"]
-
-

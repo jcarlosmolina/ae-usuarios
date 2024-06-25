@@ -30,6 +30,7 @@ data:
   ae-novedades-url: 'https://ae-novedades:8087'
   ae-generasolicitud-database-jdbc-url: 'jdbc:sqlserver://expensereportdemosqlserver.database.windows.net;databaseName=AE;encrypt=true;trustServerCertificate=true'
   ae-generasolicitud-url: 'https://ae-generasolicitud:8088'
+  ae-dummy: 'Dummy'
 ---
 kind: Deployment
 apiVersion: apps/v1

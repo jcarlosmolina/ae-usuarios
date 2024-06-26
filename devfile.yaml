@@ -46,7 +46,7 @@ commands:
       component: image-build
   - id: deployk8s
     apply:
-      component: kubernetes-deploy
+      component: openshift-deploy
   - id: deploy
     composite:
       commands:

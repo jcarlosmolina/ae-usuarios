@@ -13,7 +13,7 @@ metadata:
   name: ae-config
 data:
   ae-apigateway-database-jdbc-url: 'jdbc:sqlserver://expensereportdemosqlserver.database.windows.net;databaseName=AE;encrypt=true;trustServerCertificate=true'
-  ae-apigateway-url: 'https://ae-apigateway:8080'
+  ae-apigateway-url: 'https://ae:8080'
   ae-usuarios-database-jdbc-url: 'jdbc:sqlserver://expensereportdemosqlserver.database.windows.net;databaseName=AE;encrypt=true;trustServerCertificate=true'
   ae-usuarios-url: 'https://ae-usuarios:8081'
   ae-configuraciones-database-jdbc-url: 'jdbc:sqlserver://expensereportdemosqlserver.database.windows.net;databaseName=AE;encrypt=true;trustServerCertificate=true'
@@ -30,25 +30,24 @@ data:
   ae-novedades-url: 'https://ae-novedades:8087'
   ae-generasolicitud-database-jdbc-url: 'jdbc:sqlserver://expensereportdemosqlserver.database.windows.net;databaseName=AE;encrypt=true;trustServerCertificate=true'
   ae-generasolicitud-url: 'https://ae-generasolicitud:8088'
-  ae-dummy: 'Dummy'
 ---
 kind: Deployment
 apiVersion: apps/v1
 metadata:
-  name: ae-ae-usuarios
+  name: ae-usuarios
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: ae-ae-usuarios
+      app: ae-usuarios
   template:
     metadata:
       labels:
-        app: ae-ae-usuarios
+        app: ae-usuarios
     spec:
       containers:
-        - name: ae-ae-usuarios
-          image: ae-ae-usuarios:latest
+        - name: ae-usuarios
+          image: ae-usuarios:latest
           ports:
             - name: http
               containerPort: 8081
@@ -122,14 +121,14 @@ spec:
 kind: Service
 apiVersion: v1
 metadata:
-  name: ae-ae-usuarios
+  name: ae-usuarios
   labels:
-    app: ae-ae-usuarios
-    app.kubernetes.io/component: ae-ae-usuarios
-    app.kubernetes.io/instance: ae-ae-usuarios
-    app.kubernetes.io/name: ae-ae-usuarios
+    app: ae-usuarios
+    app.kubernetes.io/component: ae-usuarios
+    app.kubernetes.io/instance: ae-usuarios
+    app.kubernetes.io/name: ae-usuarios
     app.kubernetes.io/part-of: ae-app
-    app.openshift.io/runtime: ae-ae-usuarios
+    app.openshift.io/runtime: ae-usuarios
   annotation:
     app.openshift.io/vcs-ref: ''
     app.openshift.io/vcs-uri: 'https://github.com/jcarlosmolina/ae-usuarios.git'
@@ -144,27 +143,27 @@ spec:
   ipFamilyPolicy: SingleStack
   sesssionAffinity: None
   selector:
-    app: ae-ae-usuarios
-    deployment: ae-ae-usuarios
+    app: ae-usuarios
+    deployment: ae-usuarios
 ---
 kind: Route
 apiVersion: route.openshift.io/v1
 metadata:
-  name: ae-ae-usuarios
+  name: ae-usuarios
   labels:
-    app: ae-ae-usuarios
-    app.kubernetes.io/component: ae-ae-usuarios
-    app.kubernetes.io/instance: ae-ae-usuarios
-    app.kubernetes.io/name: ae-ae-usuarios
+    app: ae-usuarios
+    app.kubernetes.io/component: ae-usuarios
+    app.kubernetes.io/instance: ae-usuarios
+    app.kubernetes.io/name: ae-usuarios
     app.kubernetes.io/part-of: ae-app
-    app.openshift.io/runtime: ae-ae-usuarios
+    app.openshift.io/runtime: ae-usuarios
   annotations:
     isFromDevFile: 'true'
 spec:
-  host: ae-ae-usuarios-jcmintegranova-dev.apps.sandbox-m2.ll9k.p1.openshiftapps.com
+  host: ae-usuarios-jcmintegranova-dev.apps.sandbox-m2.ll9k.p1.openshiftapps.com
   to:
     kind: Service
-    name: ae-ae-usuarios
+    name: ae-usuarios
     weight: 100
   port:
     targetPort: '8081'
@@ -179,14 +178,14 @@ metadata:
   annotations:
     app.openshift.io/vcs-ref: ''
     app.openshift.io/vcs-uri: 'https://github.com/jcarlosmolina/ae-usuarios.git'
-  name: ae-ae-usuarios
+  name: ae-usuarios
   labels:
-    app: ae-ae-usuarios
-    app.kubernetes.io/component: ae-ae-usuarios
-    app.kubernetes.io/instance: ae-ae-usuarios
-    app.kubernetes.io/name: ae-ae-usuarios
+    app: ae-usuarios
+    app.kubernetes.io/component: ae-usuarios
+    app.kubernetes.io/instance: ae-usuarios
+    app.kubernetes.io/name: ae-usuarios
     app.kubernetes.io/part-of: ae-app
-    app.openshift.io/runtime: ae-ae-usuarios
+    app.openshift.io/runtime: ae-usuarios
 spec:
   lookupPolicy:
     local: false
@@ -194,20 +193,20 @@ spec:
 kind: BuildConfig
 apiVersion: build.openshift.io/v1
 metadata:
-  name: ae-ae-usuarios
+  name: ae-usuarios
   labels:
-    app: ae-ae-usuarios
-    app.kubernetes.io/component: ae-ae-usuarios
-    app.kubernetes.io/instance: ae-ae-usuarios
-    app.kubernetes.io/name: ae-ae-usuarios
+    app: ae-usuarios
+    app.kubernetes.io/component: ae-usuarios
+    app.kubernetes.io/instance: ae-usuarios
+    app.kubernetes.io/name: ae-usuarios
     app.kubernetes.io/part-of: ae-app
-    app.openshift.io/runtime: ae-ae-usuarios
+    app.openshift.io/runtime: ae-usuarios
 spec:
   nodeSelector: null
   output:
     to:
       kind: ImageStreamTag
-      name: 'ae-ae-usuarios:latest'
+      name: 'ae-usuarios:latest'
   resources: {}
   successfulBuildsHistoryLimit: 5
   failedBuildsHistoryLimit: 5

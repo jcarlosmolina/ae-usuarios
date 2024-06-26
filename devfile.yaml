@@ -22,18 +22,18 @@ parent:
 components:
   - name: image-build
     image:
-      imageName: ae-ae-usuarios:latest
+      imageName: ae-usuarios:latest
       dockerfile:
         uri: src/main/docker/Dockerfile.jvm.staged
         buildContext: .
         rootRequired: false
-  - name: kubernetes-deploy
+  - name: openshift-deploy
     attributes:
       deployment/replicas: 1
       deployment/cpuRequest: 10m
       deployment/memoryRequest: 100Mi
       deployment/container-port: 8081
-    kubernetes:
+    openshift:
       uri: deploy.yaml
       endpoints:
         - name: http-8081

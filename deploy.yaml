@@ -69,51 +69,51 @@ spec:
               secretKeyRef:
                 name: ae-secret
                 key: db-password
-          - name: quarkus.rest-client.ae.url
+          - name: quarkus.rest-client.ae-apigateway.url
             valueFrom:
               secretKeyRef:
                 name: ae-config
-                key: ae-ae-url
+                key: ae-apigateway-url
           - name: quarkus.rest-client.ae-usuarios.url
             valueFrom:
               secretKeyRef:
                 name: ae-config
-                key: ae-ae-usuarios-url
+                key: ae-usuarios-url
           - name: quarkus.rest-client.ae-configuraciones.url
             valueFrom:
               secretKeyRef:
                 name: ae-config
-                key: ae-ae-configuraciones-url
+                key: ae-configuraciones-url
           - name: quarkus.rest-client.ae-reportes.url
             valueFrom:
               secretKeyRef:
                 name: ae-config
-                key: ae-ae-reportes-url
+                key: ae-reportes-url
           - name: quarkus.rest-client.ae-firmas.url
             valueFrom:
               secretKeyRef:
                 name: ae-config
-                key: ae-ae-firmas-url
+                key: ae-firmas-url
           - name: quarkus.rest-client.ae-personas-afiliados-contratantes.url
             valueFrom:
               secretKeyRef:
                 name: ae-config
-                key: ae-ae-personas-afiliados-contratantes-url
+                key: ae-personas-afiliados-contratantes-url
           - name: quarkus.rest-client.ae-solicitudes.url
             valueFrom:
               secretKeyRef:
                 name: ae-config
-                key: ae-ae-solicitudes-url
+                key: ae-solicitudes-url
           - name: quarkus.rest-client.ae-novedades.url
             valueFrom:
               secretKeyRef:
                 name: ae-config
-                key: ae-ae-novedades-url
+                key: ae-novedades-url
           - name: quarkus.rest-client.ae-generasolicitud.url
             valueFrom:
               secretKeyRef:
                 name: ae-config
-                key: ae-ae-generasolicitud-url
+                key: ae-generasolicitud-url
           resources:
             requests:
               memory: "100Mi"

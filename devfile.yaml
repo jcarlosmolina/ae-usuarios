@@ -10,9 +10,6 @@ components:
       endpoints:
         - name: http
           targetPort: 8081
-      env:
-        - name: QUARKUS_PROFILE
-          value: prod
   - name: ae-usuarios-config
     kubernetes:
       inlined: |

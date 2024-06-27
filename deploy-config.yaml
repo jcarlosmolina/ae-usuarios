@@ -1,14 +1,6 @@
 apiVersion: v1
 kind: List
 items:
-  - kind: Secret
-    apiVersion: v1
-    metadata:
-      name: ae-secret
-    data:
-      db-password: SW50M2dyNG4wdjQ=
-      db-username: SW50ZWdyYW5vdmE=
-    type: Opaque
   - kind: ConfigMap
     apiVersion: v1
     metadata:

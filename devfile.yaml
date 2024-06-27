@@ -1,12 +1,7 @@
-schemaVersion: 2.1.0
+schemaVersion: 2.2.0
 metadata:
   name: ae-usuarios
   version: 1.0.0
-projects:
-  - name: ae-usuarios
-    source:
-      type: git
-      location: 'https://github.com/jcarlosmolina/ae-usuarios.git'
 components:
   - name: ae-usuarios-container
     container:

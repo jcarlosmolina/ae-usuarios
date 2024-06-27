@@ -33,7 +33,7 @@ components:
       deployment/cpuRequest: 10m
       deployment/memoryRequest: 100Mi
       deployment/container-port: 8081
-    openshift:
+    kubernetes:
       uri: deploy-config.yaml
       endpoints:
         - name: http-8081

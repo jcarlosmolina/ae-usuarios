@@ -1,0 +1,86 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ae-usuarios
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ae-usuarios
+  template:
+    metadata:
+      labels:
+        app: ae-usuarios
+    spec:
+      containers:
+        - name: ae-usuarios
+          image: ae-usuarios:latest
+          ports:
+            - name: http
+              containerPort: 8081
+              protocol: TCP
+          env:
+          - name: quarkus.datasource.jdbc.url
+            valueFrom:
+              configMapKeyRef:
+                name: ae-config
+                key: ae-usuarios-database-jdbc-url
+          - name: quarkus.datasource.username
+            valueFrom:
+              secretKeyRef:
+                name: ae-secret
+                key: db-username
+          - name: quarkus.datasource.password
+            valueFrom:
+              secretKeyRef:
+                name: ae-secret
+                key: db-password
+          - name: quarkus.rest-client.ae-apigateway.url
+            valueFrom:
+              secretKeyRef:
+                name: ae-config
+                key: ae-apigateway-url
+          - name: quarkus.rest-client.ae-usuarios.url
+            valueFrom:
+              secretKeyRef:
+                name: ae-config
+                key: ae-usuarios-url
+          - name: quarkus.rest-client.ae-configuraciones.url
+            valueFrom:
+              secretKeyRef:
+                name: ae-config
+                key: ae-configuraciones-url
+          - name: quarkus.rest-client.ae-reportes.url
+            valueFrom:
+              secretKeyRef:
+                name: ae-config
+                key: ae-reportes-url
+          - name: quarkus.rest-client.ae-firmas.url
+            valueFrom:
+              secretKeyRef:
+                name: ae-config
+                key: ae-firmas-url
+          - name: quarkus.rest-client.ae-personas-afiliados-contratantes.url
+            valueFrom:
+              secretKeyRef:
+                name: ae-config
+                key: ae-personas-afiliados-contratantes-url
+          - name: quarkus.rest-client.ae-solicitudes.url
+            valueFrom:
+              secretKeyRef:
+                name: ae-config
+                key: ae-solicitudes-url
+          - name: quarkus.rest-client.ae-novedades.url
+            valueFrom:
+              secretKeyRef:
+                name: ae-config
+                key: ae-novedades-url
+          - name: quarkus.rest-client.ae-generasolicitud.url
+            valueFrom:
+              secretKeyRef:
+                name: ae-config
+                key: ae-generasolicitud-url
+          resources:
+            requests:
+              memory: "100Mi"
+              cpu: "10m"

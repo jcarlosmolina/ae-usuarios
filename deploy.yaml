@@ -1,5 +1,5 @@
-apiVersion: apps/v1
 kind: Deployment
+apiVersion: apps/v1
 metadata:
   name: ae-usuarios
 spec:
@@ -84,3 +84,57 @@ spec:
             requests:
               memory: "100Mi"
               cpu: "10m"
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: ae-usuarios
+  labels:
+    app: ae-usuarios
+    app.kubernetes.io/component: ae-usuarios
+    app.kubernetes.io/instance: ae-usuarios
+    app.kubernetes.io/name: ae-usuarios
+    app.kubernetes.io/part-of: ae-app
+    app.openshift.io/runtime: ae-usuarios
+  annotation:
+    app.openshift.io/vcs-ref: ''
+    app.openshift.io/vcs-uri: 'https://github.com/jcarlosmolina/ae-usuarios.git'
+    isFromDevfile: 'true'
+spec:
+  ports:
+    - name: http-8081
+      port: 8081
+      protocol: TCP
+      targetPort: 8081
+  internalTrafficPolicy: Cluster
+  ipFamilyPolicy: SingleStack
+  sesssionAffinity: None
+  selector:
+    app: ae-usuarios
+    deployment: ae-usuarios
+---
+kind: Route
+apiVersion: route.openshift.io/v1
+metadata:
+  name: ae-usuarios
+  labels:
+    app: ae-usuarios
+    app.kubernetes.io/component: ae-usuarios
+    app.kubernetes.io/instance: ae-usuarios
+    app.kubernetes.io/name: ae-usuarios
+    app.kubernetes.io/part-of: ae-app
+    app.openshift.io/runtime: ae-usuarios
+  annotations:
+    isFromDevFile: 'true'
+spec:
+  host: ae-usuarios-jcmintegranova-dev.apps.sandbox-m2.ll9k.p1.openshiftapps.com
+  to:
+    kind: Service
+    name: ae-usuarios
+    weight: 100
+  port:
+    targetPort: '8081'
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect
+  wildcardPolicy: None

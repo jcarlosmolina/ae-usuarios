@@ -34,7 +34,7 @@ components:
       deployment/memoryRequest: 100Mi
       deployment/container-port: 8081
     openshift:
-      uri: deploy.yaml
+      uri: deploy-config.yaml
       endpoints:
         - name: http-8081
           targetPort: 8081

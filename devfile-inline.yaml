@@ -152,8 +152,6 @@ spec:
     type: Git
     git:
       uri: 'https://github.com/jcarlosmolina/ae-usuarios.git'
-    contextDir: src/main/docker
-    dockerfilePath: Dockerfile.jvm.staged
   strategy:
     type: Docker
   output:

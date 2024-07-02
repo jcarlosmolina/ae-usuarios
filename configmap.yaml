@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ae-apigateway-config
+data:
+  ae-apigateway-database-jdbc-url: 'jdbc:sqlserver://expensereportdemosqlserver.database.windows.net;databaseName=AE;encrypt=true;trustServerCertificate=true'
+  ae-apigateway-url: 'https://ae-apigateway:8080'
+  ae-usuarios-database-jdbc-url: 'jdbc:sqlserver://expensereportdemosqlserver.database.windows.net;databaseName=AE;encrypt=true;trustServerCertificate=true'
+  ae-usuarios-url: 'https://ae-usuarios:8081'
+  ae-configuraciones-database-jdbc-url: 'jdbc:sqlserver://expensereportdemosqlserver.database.windows.net;databaseName=AE;encrypt=true;trustServerCertificate=true'
+  ae-configuraciones-url: 'https://ae-configuraciones:8082'
+  ae-reportes-database-jdbc-url: 'jdbc:sqlserver://expensereportdemosqlserver.database.windows.net;databaseName=AE;encrypt=true;trustServerCertificate=true'
+  ae-reportes-url: 'https://ae-reportes:8083'
+  ae-firmas-database-jdbc-url: 'jdbc:sqlserver://expensereportdemosqlserver.database.windows.net;databaseName=AE;encrypt=true;trustServerCertificate=true'
+  ae-firmas-url: 'https://ae-firmas:8084'
+  ae-personas-afiliados-contratantes-database-jdbc-url: 'jdbc:sqlserver://expensereportdemosqlserver.database.windows.net;databaseName=AE;encrypt=true;trustServerCertificate=true'
+  ae-personas-afiliados-contratantes-url: 'https://ae-personas-afiliados-contratantes:8085'
+  ae-solicitudes-database-jdbc-url: 'jdbc:sqlserver://expensereportdemosqlserver.database.windows.net;databaseName=AE;encrypt=true;trustServerCertificate=true'
+  ae-solicitudes-url: 'https://ae-solicitudes:8086'
+  ae-novedades-database-jdbc-url: 'jdbc:sqlserver://expensereportdemosqlserver.database.windows.net;databaseName=AE;encrypt=true;trustServerCertificate=true'
+  ae-novedades-url: 'https://ae-novedades:8087'
+  ae-generasolicitud-database-jdbc-url: 'jdbc:sqlserver://expensereportdemosqlserver.database.windows.net;databaseName=AE;encrypt=true;trustServerCertificate=true'
+  ae-generasolicitud-url: 'https://ae-generasolicitud:8088'

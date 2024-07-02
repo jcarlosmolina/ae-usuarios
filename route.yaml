@@ -1,0 +1,18 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: ae-apigateway
+  labels:
+    app: ae-apigateway
+    app.kubernetes.io/component: ae-apigateway
+    app.kubernetes.io/instance: ae-apigateway
+    app.kubernetes.io/name: ae-apigateway
+    app.kubernetes.io/part-of: ae-app
+    app.openshift.io/runtime: ae-apigateway
+spec:
+  to:
+    kind: Service
+    name: ae-apigateway
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Allow

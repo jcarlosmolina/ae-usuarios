@@ -1,0 +1,24 @@
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata:
+  name: ae-apigateway
+  labels:
+    app: ae-apigateway
+    app.kubernetes.io/component: ae-apigateway
+    app.kubernetes.io/instance: ae-apigateway
+    app.kubernetes.io/name: ae-apigateway
+    app.kubernetes.io/part-of: ae-app
+    app.openshift.io/runtime: ae-apigateway
+spec:
+  source:
+    type: Git
+    git:
+      uri: "git@github.com:jcarlosmolina/ae-apigateway.git"
+    sourceSecret:
+      name: ae-git-credentials
+  strategy:
+    type: Docker
+  output:
+    to:
+      kind: ImageStreamTag
+      name: ae-apigateway:latest

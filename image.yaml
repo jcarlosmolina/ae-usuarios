@@ -1,0 +1,11 @@
+apiVersion: image.openshift.io/v1
+kind: ImageStream
+metadata:
+  name: ae-apigateway
+  labels:
+    app: ae-apigateway
+    app.kubernetes.io/component: ae-apigateway
+    app.kubernetes.io/instance: ae-apigateway
+    app.kubernetes.io/name: ae-apigateway
+    app.kubernetes.io/part-of: ae-app
+    app.openshift.io/runtime: ae-apigateway

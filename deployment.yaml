@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ae-apigateway
+  labels:
+    app: ae-apigateway
+    app.kubernetes.io/component: ae-apigateway
+    app.kubernetes.io/instance: ae-apigateway
+    app.kubernetes.io/name: ae-apigateway
+    app.kubernetes.io/part-of: ae-app
+    app.openshift.io/runtime: ae-apigateway
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ae-apigateway
+  template:
+    metadata:
+      labels:
+        app: ae-apigateway
+        deployment: ae-apigateway
+    spec:
+      containers:
+        - name: ae-apigateway
+          image: 'image-registry.openshift-image-registry.svc:5000/jcmintegranova-dev/ae-apigateway:latest'
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          env:
+          - name: quarkus.datasource.jdbc.url
+            valueFrom:
+              configMapKeyRef:
+                name: ae-apigateway-config
+                key: ae-apigateway-database-jdbc-url
+          - name: quarkus.datasource.username
+            valueFrom:
+              secretKeyRef:
+                name: ae-apigateway-secret
+                key: db-username
+          - name: quarkus.datasource.password
+            valueFrom:
+              secretKeyRef:
+                name: ae-apigateway-secret
+                key: db-password
+          - name: quarkus.rest-client.ae-apigateway.url
+            valueFrom:
+              configMapKeyRef:
+                name: ae-apigateway-config
+                key: ae-apigateway-url
+          - name: quarkus.rest-client.ae-usuarios.url
+            valueFrom:
+              configMapKeyRef:
+                name: ae-apigateway-config
+                key: ae-usuarios-url
+          - name: quarkus.rest-client.ae-configuraciones.url
+            valueFrom:
+              configMapKeyRef:
+                name: ae-apigateway-config
+                key: ae-configuraciones-url
+          resources:
+            requests:
+              cpu: 10m
+              memory: 100Mi

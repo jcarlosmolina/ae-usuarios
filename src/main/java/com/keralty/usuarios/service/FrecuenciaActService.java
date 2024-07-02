@@ -1,0 +1,487 @@
+package com.keralty.usuarios.service;
+
+import com.keralty.usuarios.exception.ModelException;
+import com.keralty.usuarios.exception.SystemException;
+import com.keralty.usuarios.global.Constants;
+import com.keralty.usuarios.global.FrecuenciaActConstants;
+import com.keralty.usuarios.persistence.FrecuenciaAct;
+import com.keralty.usuarios.persistence.oid.FrecuenciaActOid;
+import com.keralty.usuarios.repository.FrecuenciaActJpaRepository;
+import com.keralty.usuarios.sqlutils.SQLSelect;
+import com.keralty.usuarios.sqlutils.SQLWhereComparison;
+import com.keralty.usuarios.sqlutils.SQLWhereConjunction;
+import com.keralty.usuarios.sqlutils.SQLWhereDisjunction;
+import com.keralty.usuarios.sqlutils.SQLWhereOperandLiteral;
+import com.keralty.usuarios.sqlutils.SQLWhereOperandPathAttribute;
+import com.keralty.usuarios.viewmodel.FilterRequest;
+import com.keralty.usuarios.viewmodel.FilterVariableRequest;
+import com.keralty.usuarios.viewmodel.frecuenciaact.crud.FrecuenciaActPostViewModel;
+import com.keralty.usuarios.viewmodel.frecuenciaact.crud.FrecuenciaActPutViewModel;
+import com.keralty.usuarios.viewmodel.InstanceResponseViewModel;
+import com.keralty.usuarios.viewmodel.PopulationResponseViewModel;
+import com.keralty.usuarios.viewmodel.PreloadResponseViewModel;
+import com.keralty.usuarios.viewmodel.PreloadViewModel;
+import com.keralty.usuarios.viewmodel.QueryRequest;
+import com.keralty.usuarios.viewmodel.QueryResponse;
+import com.keralty.usuarios.viewmodel.ServiceResponse;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
+import java.sql.Date;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import org.slf4j.LoggerFactory;
+
+@Transactional
+@ApplicationScoped
+public class FrecuenciaActService extends AbstractService {
+
+    @Inject
+    FrecuenciaActJpaRepository repository;
+
+    @Inject
+    FrecuenciaActService frecuenciaActSrv;
+    
+    public FrecuenciaAct post(FrecuenciaActPostViewModel payload) {
+        FrecuenciaAct instance = new FrecuenciaAct();
+        instance.setFrecuenciaActParametrica(payload.getFrecuenciaActParametrica());
+        instance.setFrecuenciaActFrecuencia(payload.getFrecuenciaActFrecuencia());
+        return repository.save(instance);
+    }
+
+    public FrecuenciaAct put(Long frecuenciaActCodigo, FrecuenciaActPutViewModel payload) throws ModelException {
+        if (!repository.existsById(frecuenciaActCodigo)) throw new ModelException("Not found-Put");
+        FrecuenciaAct instance = new FrecuenciaAct(new FrecuenciaActOid(frecuenciaActCodigo));
+        instance.setFrecuenciaActFrecuencia(payload.getFrecuenciaActFrecuencia());
+        instance.setFrecuenciaActFechaUltimaSinc(payload.getFrecuenciaActFechaUltimaSinc());
+        instance.setFrecuenciaActResultadoSinc(payload.getFrecuenciaActResultadoSinc());
+        instance.setFrecuenciaActUsuario(payload.getFrecuenciaActUsuario());
+        instance.setFrecuenciaActNombreUsuario(payload.getFrecuenciaActNombreUsuario());
+        return repository.save(instance);
+    }
+
+    public void delete(Long frecuenciaActCodigo) throws ModelException {
+        if (!repository.existsById(frecuenciaActCodigo)) throw new ModelException("Not found-Delete");
+        repository.deleteById(frecuenciaActCodigo);
+    }
+
+    public List<Map<String, Object>> solveQuery(QueryRequest request) {
+        return solveGenericQuery(request, FrecuenciaActConstants.CLASS_NAME);
+    }
+
+    private List<FrecuenciaAct> solveFrecuenciaActTypedQuery(QueryRequest request) {
+        return repository.solveQuery(processQueryRequest(request, FrecuenciaActConstants.CLASS_NAME), request.getPageSize(), request.getPageNumber());
+    }
+    
+    private int solveFrecuenciaActTypedCountQuery(QueryRequest request) {
+        return repository.solveCountQuery(processCountQueryRequest(request, FrecuenciaActConstants.CLASS_NAME));
+    }
+    
+    /*
+     * Returns the population of class FrecuenciaAct
+     *
+     * @return Population of class FrecuenciaAct
+     */
+    @Transactional(Transactional.TxType.SUPPORTS)
+    public List<FrecuenciaAct> get() {
+        List<FrecuenciaAct> results = new java.util.ArrayList<>();
+        repository.findAll().forEach(results::add);
+        return results;
+    }
+    
+    /*
+     * Gets the preloaded list of objects of class FrecuenciaAct
+     *
+     * @param queryRequest Request object that dictates the search conditions to 
+     * retrieve objects
+     *
+     * @return Preloaded list of objects of class FrecuenciaAct
+     */
+    @Transactional(Transactional.TxType.SUPPORTS)
+    public List<PreloadViewModel> getPreload(QueryRequest queryRequest) {
+        List<PreloadViewModel> results = new ArrayList<>();
+        List<FrecuenciaAct> instances = get(queryRequest);
+        if(FrecuenciaActConstants.DSICFRECUENCIAACT.equals(queryRequest.getDisplaySetName())) {
+            results = instances.stream().map(x -> new PreloadViewModel(x.getOid().toJson(), x.buildICFrecuenciaAct())).collect(Collectors.toList());
+        }
+        if(FrecuenciaActConstants.DSDSFRECUENCIAACTPIU.equals(queryRequest.getDisplaySetName())) {
+            results = instances.stream().map(x -> new PreloadViewModel(x.getOid().toJson(), x.buildDSFrecuenciaActPIU())).collect(Collectors.toList());
+        }
+        return results;
+    }
+
+    /*
+     * Gets the properties of DisplaySet ICFrecuenciaAct for a given instance
+     *
+     * @param instanceOid Instance OID in JSON format. Related instance OID in JSON
+     * format if relatedInstancePath is provided
+     *
+     * @param relatedInstancePath Inverse navigation path to a related instance
+     *
+     * @param relatedInstanceDomain Domain of the related instance
+     *
+     * @return Properties of DisplaySet ICFrecuenciaAct for a given instance
+     */
+    @Transactional(Transactional.TxType.SUPPORTS)
+    public com.keralty.usuarios.viewmodel.frecuenciaact.ds.ICFrecuenciaAct getICFrecuenciaAct(String instanceOid, String relatedInstancePath, String relatedInstanceDomain) {
+        FrecuenciaAct instance = getByJsonOid(instanceOid);
+        return new com.keralty.usuarios.viewmodel.frecuenciaact.ds.ICFrecuenciaAct(instance);
+    }
+
+    /*
+     * Gets the properties of DisplaySet DSFrecuenciaActPIU for a given instance
+     *
+     * @param instanceOid Instance OID in JSON format. Related instance OID in JSON
+     * format if relatedInstancePath is provided
+     *
+     * @param relatedInstancePath Inverse navigation path to a related instance
+     *
+     * @param relatedInstanceDomain Domain of the related instance
+     *
+     * @return Properties of DisplaySet DSFrecuenciaActPIU for a given instance
+     */
+    @Transactional(Transactional.TxType.SUPPORTS)
+    public com.keralty.usuarios.viewmodel.frecuenciaact.ds.DSFrecuenciaActPIU getDSFrecuenciaActPIU(String instanceOid, String relatedInstancePath, String relatedInstanceDomain) {
+        FrecuenciaAct instance = getByJsonOid(instanceOid);
+        return new com.keralty.usuarios.viewmodel.frecuenciaact.ds.DSFrecuenciaActPIU(instance);
+    }
+
+    /*
+     * Returns the population of class FrecuenciaAct that matches certain search criteria
+     *
+     * @param queryRequest Search criteria
+     *
+     * @return Population of class FrecuenciaAct matching the search criteria
+     */
+    @Transactional(Transactional.TxType.SUPPORTS)
+    public List<FrecuenciaAct> get(QueryRequest queryRequest) {
+        return solveFrecuenciaActTypedQuery(queryRequest);
+    }
+    
+    /*
+     * Returns the list of instances that matches certain search criteria
+     *
+     * @param queryRequest Request object that dictates the search conditions to 
+     * retrieve objects
+     *
+     * @return List of instances that matches certain search criteria
+     */
+    @Transactional(Transactional.TxType.SUPPORTS)
+    public QueryResponse getDynamic(QueryRequest queryRequest) {
+        if (queryRequest.getDisplaySetName() == null || queryRequest.getDisplaySetName().isEmpty()) {
+            return new PopulationResponseViewModel(solveFrecuenciaActTypedQuery(queryRequest).stream()
+                    .map(instance -> buildDynamicObject(instance, queryRequest.getDisplaySetItems()))
+                    .collect(Collectors.toList()), queryRequest.getPageSize() != 0 ? solveFrecuenciaActTypedCountQuery(queryRequest) : 0);
+        } else {
+            return new PreloadResponseViewModel(solveFrecuenciaActTypedQuery(queryRequest).stream()
+                    .map(instance -> buildPreloadViewModel(instance, queryRequest.getDisplaySetName()))
+                    .collect(Collectors.toList()));
+        }
+    }
+
+    /*
+     * Returns an instance of FrecuenciaAct by ID
+     *
+     * @param frecuenciaActCodigo Identification field frecuenciaActCodigo
+     *
+     * @return Instance of FrecuenciaAct
+     */
+    @Transactional(Transactional.TxType.REQUIRED)
+    public FrecuenciaAct getById(Long frecuenciaActCodigo) {
+        return getByOID(new FrecuenciaActOid(frecuenciaActCodigo));
+    }
+    
+    /*
+     * Returns an instance of FrecuenciaAct by OID
+     *
+     * @param oid Object IDentifier
+     *
+     * @return Instance of FrecuenciaAct
+     */
+    @Transactional(Transactional.TxType.REQUIRED)
+    public FrecuenciaAct getByOID(FrecuenciaActOid oid) {
+        Optional<FrecuenciaAct> instance = getInstanceByOid(oid);
+        return instance.isPresent() ? instance.get() : null;
+    }
+    
+    /*
+     * Returns an instance of FrecuenciaAct by OID applying horizontal visibility constraints
+     *
+     * @param oid Object IDentifier
+     *
+     * @return Instance of FrecuenciaAct
+     */
+    @Transactional(Transactional.TxType.SUPPORTS)
+    public FrecuenciaAct getByOIDWithHV(FrecuenciaActOid oid) {
+        Optional<FrecuenciaAct> instance = getInstanceByOid(oid);
+    	return instance.isPresent() && instance.get().checkHorizontalVisibility(getAgentInstance()) 
+    		 ? instance.get() 
+    		 : null;
+    }
+    
+    private Optional<FrecuenciaAct> getInstanceByOid(FrecuenciaActOid oid) {
+        return oid != null && oid.getFrecuenciaActCodigo() != null
+               ? repository.findById(oid.getFrecuenciaActCodigo())
+               : Optional.empty();
+    }
+    
+    /*
+     * Returns an instance of FrecuenciaAct by OID in JSON format
+     *
+     * @param jsonOid Object IDentifier in JSON format
+     *
+     * @return Instance of FrecuenciaAct
+     */
+    @Override
+    @Transactional(Transactional.TxType.REQUIRED)
+    public FrecuenciaAct getByJsonOid(String jsonOid) {
+        FrecuenciaActOid oid = new FrecuenciaActOid();
+        oid.fromJsonString(jsonOid);
+        return getByOIDWithHV(oid);
+    }
+
+    /*
+     * Returns a set of displayset items for an instance of FrecuenciaAct
+     *
+     * @param oid Object IDentifier
+     *
+     * @param displaySetItems List of comma-separated displayset items
+     *
+     * @return Set of displayset items for an instance of FrecuenciaAct
+     */
+    @Transactional(Transactional.TxType.SUPPORTS)
+    public InstanceResponseViewModel getFrecuenciaActDynamic(FrecuenciaActOid oid, String displaySetItems) {
+        return new InstanceResponseViewModel(getByOIDWithHV(oid), displaySetItems);
+    }
+
+    /*
+     * Returns the supplementary info for a given instance
+     *
+     * @param oid Instance OID
+     *
+     * @param dsName DisplaySet name
+     *
+     * @return Supplementary info for a given instance
+     */
+    @Transactional(Transactional.TxType.SUPPORTS)
+    public String getSuppInfo(FrecuenciaActOid oid, String dsName) {
+        FrecuenciaAct instance = getByOIDWithHV(oid);
+        return (instance != null ? getSuppInfo(instance, dsName): "");
+    }
+
+    private String getSuppInfo(FrecuenciaAct instance, String dsName) {
+        if (FrecuenciaActConstants.DSICFRECUENCIAACT.equals(dsName))
+            return instance.buildICFrecuenciaAct();
+        return instance != null && dsName.isEmpty() ? instance.getOid().toJson() : "";
+    }
+
+    public static PreloadViewModel buildPreloadViewModel(FrecuenciaAct instance, String dsName) {
+        if (FrecuenciaActConstants.DSICFRECUENCIAACT.equals(dsName))
+            return new PreloadViewModel(instance.getOid().toJson(), instance.buildICFrecuenciaAct());
+        if (FrecuenciaActConstants.DSDSFRECUENCIAACTPIU.equals(dsName))
+            return new PreloadViewModel(instance.getOid().toJson(), instance.buildDSFrecuenciaActPIU());
+        return new PreloadViewModel(instance.getOid().toJson(), "");
+    }
+
+
+    @Override
+    protected void applyQueryFilters(FilterRequest filterRequest, SQLSelect sql) throws SystemException {
+        if (FrecuenciaActConstants.FILTER_NAME_FFRECUENCIAACTVARIOS.equalsIgnoreCase(filterRequest.getName()))
+            fFrecuenciaActVarios(filterRequest, sql);
+    }
+
+    @Override
+    protected void applyServiceSIFilters(FilterRequest filterRequest, SQLSelect sql) {
+        if ("SuppInfo_IC_FrecuenciaAct".equals(filterRequest.getName()))
+            suppInfo4ICFrecuenciaAct(filterRequest.getFilterVariable("searchText").toString(), sql);
+    }
+
+
+    private void fFrecuenciaActVarios(FilterRequest filterRequest, SQLSelect sql) {
+        SQLWhereConjunction conjunction = new SQLWhereConjunction();
+        Long vParametrica = filterRequest.hasFilterVariable(FrecuenciaActConstants.VAR_NAME_FFRECUENCIAACTVARIOS_VPARAMETRICA) ? (Long) filterRequest.getFilterVariable(FrecuenciaActConstants.VAR_NAME_FFRECUENCIAACTVARIOS_VPARAMETRICA, FilterVariableRequest.NAT) : null;
+        Date vFIni = filterRequest.hasFilterVariable(FrecuenciaActConstants.VAR_NAME_FFRECUENCIAACTVARIOS_VFINI) ? (Date) filterRequest.getFilterVariable(FrecuenciaActConstants.VAR_NAME_FFRECUENCIAACTVARIOS_VFINI, FilterVariableRequest.DATE) : null;
+        Date vFFin = filterRequest.hasFilterVariable(FrecuenciaActConstants.VAR_NAME_FFRECUENCIAACTVARIOS_VFFIN) ? (Date) filterRequest.getFilterVariable(FrecuenciaActConstants.VAR_NAME_FFRECUENCIAACTVARIOS_VFFIN, FilterVariableRequest.DATE) : null;
+
+        // Parametrica = vParametrica
+        if (vParametrica != null) {
+            // '=' Comparison
+            SQLWhereComparison comparison1 = new SQLWhereComparison(sql);
+            comparison1.setOperator("=");
+            
+            // Operand 1
+            SQLWhereOperandPathAttribute operand112 = new SQLWhereOperandPathAttribute(FrecuenciaActConstants.ATTR_NAME_FRECUENCIAACTPARAMETRICA, Constants.Type.NAT.getTypeName());
+            comparison1.setFirstOperand(operand112);
+            
+            // Operand 2
+            SQLWhereOperandLiteral operand223 = new SQLWhereOperandLiteral(vParametrica, Constants.Type.NAT.getTypeName());
+            comparison1.setSecondOperand(operand223);
+            conjunction.addOperand(comparison1);
+
+        }        
+
+        // FechaUltimaSinc >= vFIni
+        if (vFIni != null) {
+            // '>=' Comparison
+            SQLWhereComparison comparison2 = new SQLWhereComparison(sql);
+            comparison2.setOperator(">=");
+            
+            // Operand 1
+            SQLWhereOperandPathAttribute operand113 = new SQLWhereOperandPathAttribute(FrecuenciaActConstants.ATTR_NAME_FRECUENCIAACTFECHAULTIMASINC, Constants.Type.DATE.getTypeName());
+            comparison2.setFirstOperand(operand113);
+            
+            // Operand 2
+            SQLWhereOperandLiteral operand224 = new SQLWhereOperandLiteral(vFIni, Constants.Type.DATE.getTypeName());
+            comparison2.setSecondOperand(operand224);
+            conjunction.addOperand(comparison2);
+
+        }        
+
+        // FechaUltimaSinc <= vFFin
+        if (vFFin != null) {
+            // '<=' Comparison
+            SQLWhereComparison comparison3 = new SQLWhereComparison(sql);
+            comparison3.setOperator("<=");
+            
+            // Operand 1
+            SQLWhereOperandPathAttribute operand114 = new SQLWhereOperandPathAttribute(FrecuenciaActConstants.ATTR_NAME_FRECUENCIAACTFECHAULTIMASINC, Constants.Type.DATE.getTypeName());
+            comparison3.setFirstOperand(operand114);
+            
+            // Operand 2
+            SQLWhereOperandLiteral operand225 = new SQLWhereOperandLiteral(vFFin, Constants.Type.DATE.getTypeName());
+            comparison3.setSecondOperand(operand225);
+            conjunction.addOperand(comparison3);
+
+        }        
+
+        sql.addConjunction(conjunction);
+    }
+
+    // IIU Methods
+
+
+    /*
+     * Solves the query needed for PIUFrecuenciaAct
+     *
+     * @param queryRequest Query request
+     * @return List of viewmodels for FrecuenciaAct using displayset DSFrecuenciaActPIU that 
+     * match the search criteria
+     */
+    @Transactional(Transactional.TxType.SUPPORTS)
+    public List<com.keralty.usuarios.viewmodel.frecuenciaact.ds.DSFrecuenciaActPIU> piuPIUFrecuenciaAct(QueryRequest queryRequest) {
+        return solveFrecuenciaActTypedQuery(queryRequest).stream()
+                .map(com.keralty.usuarios.viewmodel.frecuenciaact.ds.DSFrecuenciaActPIU::new)
+                .collect(Collectors.toList());
+    }
+
+    /*
+     * Solves the COUNT query needed for PIUFrecuenciaAct
+     *
+     * @param queryRequest Query request
+     * @returns Count of instances for PIUFrecuenciaAct
+     */
+    public int getCount4PIUFrecuenciaAct(QueryRequest queryRequest) {
+        return solveFrecuenciaActTypedQuery(queryRequest).size();
+    }
+
+    // Service: fijarSincronizacion
+
+    /*
+     * Entry point for service fijarSincronizacion
+     *
+     * @param request Service request viewmodel
+     *
+     * @returns Service response ViewModel encapsulating the execution results
+     */
+    @Transactional(Transactional.TxType.NOT_SUPPORTED)
+    public ServiceResponse fijarSincronizacion(
+            com.keralty.usuarios.viewmodel.frecuenciaact.siu.FijarSincronizacionRequest request) {
+        ServiceResponse response = new ServiceResponse();
+        try {
+            response = frecuenciaActSrv.fijarSincronizacionTxn(request);
+        } catch (Exception e) {
+            response.setException(e);
+        }
+        return response;
+    }
+
+    /*
+     * Transactional entry point for service fijarSincronizacion
+     *
+     * @param request Service request viewmodel
+     *
+     * @returns Service response ViewModel encapsulating the execution results
+     */
+    @Transactional(Transactional.TxType.REQUIRES_NEW)
+    public ServiceResponse fijarSincronizacionTxn(
+            com.keralty.usuarios.viewmodel.frecuenciaact.siu.FijarSincronizacionRequest request) throws ModelException {
+        request.setFrecuenciaActfijarSincronizacionpthisFrecuenciaActInstance(frecuenciaActSrv.getByOIDWithHV(request.getFrecuenciaActfijarSincronizacionpthisFrecuenciaAct()));
+        return frecuenciaActSrv.fijarSincronizacionImplementation(request);
+    }
+
+    /*
+     * Implements service fijarSincronizacion
+     *
+     * @param request Service request viewmodel
+     *
+     * @return Service response ViewModel encapsulating the execution results
+     */
+    @Transactional(Transactional.TxType.REQUIRED)
+    public ServiceResponse fijarSincronizacionImplementation(
+            com.keralty.usuarios.viewmodel.frecuenciaact.siu.FijarSincronizacionRequest request) throws ModelException {
+        ServiceResponse response = new ServiceResponse();
+        FrecuenciaAct frecuenciaActfijarSincronizacionpthisFrecuenciaAct = request.getFrecuenciaActfijarSincronizacionpthisFrecuenciaActInstance();
+        Date frecuenciaActfijarSincronizacionpFechaUltimaSinc = request.getFrecuenciaActfijarSincronizacionpFechaUltimaSinc();
+        String frecuenciaActfijarSincronizacionpResultadoSinc = request.getFrecuenciaActfijarSincronizacionpResultadoSinc();
+        String frecuenciaActfijarSincronizacionpUsuario = request.getFrecuenciaActfijarSincronizacionpUsuario();
+        String frecuenciaActfijarSincronizacionpNombreUsuario = request.getFrecuenciaActfijarSincronizacionpNombreUsuario();
+
+        request.checkArguments();
+        FrecuenciaAct instance = frecuenciaActfijarSincronizacionpthisFrecuenciaAct;
+        instance.setFrecuenciaActFechaUltimaSinc(frecuenciaActfijarSincronizacionpFechaUltimaSinc);
+        instance.setFrecuenciaActResultadoSinc(frecuenciaActfijarSincronizacionpResultadoSinc);
+        instance.setFrecuenciaActUsuario(frecuenciaActfijarSincronizacionpUsuario);
+        instance.setFrecuenciaActNombreUsuario(frecuenciaActfijarSincronizacionpNombreUsuario);
+
+
+        response.setInstance(repository.save(instance));
+        response.setInstanceSuppInfo(instance.buildICFrecuenciaAct());
+
+        return response;
+    }
+
+
+    private void suppInfo4ICFrecuenciaAct(String searchText, SQLSelect select) {
+        try {
+            SQLWhereDisjunction disjunction = new SQLWhereDisjunction();
+
+            SQLWhereComparison comparison1 = new SQLWhereComparison(select);
+            comparison1.setOperator("LIKE");
+            comparison1.setFirstOperand(new SQLWhereOperandPathAttribute(FrecuenciaActConstants.ATTR_NAME_FRECUENCIAACTDRVNOMBREPARAMETRICA, Constants.Type.STRING.getTypeName()));
+            comparison1.setSecondOperand(new SQLWhereOperandLiteral(searchText, Constants.Type.STRING.getTypeName()));
+            disjunction.addComparison(comparison1);
+
+            select.addDisjunction(disjunction);
+        } catch (Exception e) {
+            LoggerFactory.getLogger(this.getClass()).error(e.getMessage());
+        }
+    }
+
+    @Override
+    protected void applyFilterByOid(String jsonOid, SQLSelect sql) {
+        try {
+            FrecuenciaActOid oid = new FrecuenciaActOid().fromJsonString(jsonOid);
+            SQLWhereComparison comparison1 = new SQLWhereComparison(sql);
+            comparison1.setOperator("=");
+            comparison1.setFirstOperand(new SQLWhereOperandPathAttribute(FrecuenciaActConstants.ATTR_FIELD_FRECUENCIAACTCODIGO, Constants.Type.AUTONUMERIC.getTypeName()));
+            comparison1.setSecondOperand(new SQLWhereOperandLiteral(oid.getFrecuenciaActCodigo(), Constants.Type.AUTONUMERIC.getTypeName()));
+            sql.addComparison(comparison1);
+        } catch (Exception e) {
+            LoggerFactory.getLogger(FrecuenciaActService.class).error(e.getMessage());
+        }
+    }
+
+}

@@ -14,6 +14,7 @@ spec:
     type: Git
     git:
       uri: "git@github.com:jcarlosmolina/ae-usuarios.git"
+      ref: "alternate"
     sourceSecret:
       name: ae-git-credentials
   strategy:

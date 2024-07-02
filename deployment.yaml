@@ -1,61 +1,61 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: ae-apigateway
+  name: ae-usuarios
   labels:
-    app: ae-apigateway
-    app.kubernetes.io/component: ae-apigateway
-    app.kubernetes.io/instance: ae-apigateway
-    app.kubernetes.io/name: ae-apigateway
+    app: ae-usuarios
+    app.kubernetes.io/component: ae-usuarios
+    app.kubernetes.io/instance: ae-usuarios
+    app.kubernetes.io/name: ae-usuarios
     app.kubernetes.io/part-of: ae-app
-    app.openshift.io/runtime: ae-apigateway
+    app.openshift.io/runtime: ae-usuarios
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: ae-apigateway
+      app: ae-usuarios
   template:
     metadata:
       labels:
-        app: ae-apigateway
-        deployment: ae-apigateway
+        app: ae-usuarios
+        deployment: ae-usuarios
     spec:
       containers:
-        - name: ae-apigateway
-          image: 'image-registry.openshift-image-registry.svc:5000/jcmintegranova-dev/ae-apigateway:latest'
+        - name: ae-usuarios
+          image: 'image-registry.openshift-image-registry.svc:5000/jcmintegranova-dev/ae-usuarios:latest'
           ports:
-            - containerPort: 8080
+            - containerPort: 8081
               protocol: TCP
           env:
           - name: quarkus.datasource.jdbc.url
             valueFrom:
               configMapKeyRef:
-                name: ae-apigateway-config
+                name: ae-usuarios-config
                 key: ae-apigateway-database-jdbc-url
           - name: quarkus.datasource.username
             valueFrom:
               secretKeyRef:
-                name: ae-apigateway-secret
+                name: ae-usuarios-secret
                 key: db-username
           - name: quarkus.datasource.password
             valueFrom:
               secretKeyRef:
-                name: ae-apigateway-secret
+                name: ae-usuarios-secret
                 key: db-password
           - name: quarkus.rest-client.ae-apigateway.url
             valueFrom:
               configMapKeyRef:
-                name: ae-apigateway-config
+                name: ae-usuarios-config
                 key: ae-apigateway-url
           - name: quarkus.rest-client.ae-usuarios.url
             valueFrom:
               configMapKeyRef:
-                name: ae-apigateway-config
+                name: ae-usuarios-config
                 key: ae-usuarios-url
           - name: quarkus.rest-client.ae-configuraciones.url
             valueFrom:
               configMapKeyRef:
-                name: ae-apigateway-config
+                name: ae-usuarios-config
                 key: ae-configuraciones-url
           resources:
             requests:

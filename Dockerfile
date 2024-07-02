@@ -3,18 +3,18 @@
 #
 # Build the image with:
 #
-# docker build -f src/main/docker/Dockerfile.jvm -t balentziarra/ae-apigateway-jvm .
+# docker build -f src/main/docker/Dockerfile.jvm -t balentziarra/ae-usuarios-jvm .
 #
 # Then run the container using:
 #
-# docker run -i --rm -p 8080:8080 balentziarra/ae-apigateway-jvm
+# docker run -i --rm -p 8081:8081 balentziarra/ae-usuarios-jvm
 #
 # If you want to include the debug port into your docker image
-# you will have to expose the debug port (default 5005) like this :  EXPOSE 8080 5005
+# you will have to expose the debug port (default 5105) like this :  EXPOSE 8081 5105
 #
 # Then run the container using :
 #
-# docker run -i --rm -p 8080:8080 balentziarra/ae-apigateway-jvm
+# docker run -i --rm -p 8081:8081 balentziarra/ae-usuarios-jvm
 #
 ###
 
@@ -45,7 +45,7 @@ RUN if [ ! -d /build/target/quarkus-app ] ; then mkdir -p /build/target/quarkus-
 FROM registry.access.redhat.com/ubi8/openjdk-17:1.16
 
 #Configure the JAVA_OPTS, you can add -XshowSettings:vm to also display the heap size.
-ENV JAVA_OPTS="-Dquarkus.http.host=0.0.0.0 -Dquarkus.http.port=8080 -Djava.util.logging.manager=org.jboss.logmanager.LogManager"
+ENV JAVA_OPTS="-Dquarkus.http.host=0.0.0.0 -Dquarkus.http.port=8081 -Djava.util.logging.manager=org.jboss.logmanager.LogManager"
 
 # We make four distinct layers so if there are application changes the library layers can be re-used
 COPY --from=0 --chown=1001 /build/target/quarkus-app/lib/ /deployments/lib/

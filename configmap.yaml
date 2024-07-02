@@ -1,12 +1,12 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: ae-apigateway-config
+  name: ae-usuarios-config
 data:
   ae-apigateway-database-jdbc-url: 'jdbc:sqlserver://expensereportdemosqlserver.database.windows.net;databaseName=AE;encrypt=true;trustServerCertificate=true'
   ae-apigateway-url: 'https://ae-apigateway:8080'
   ae-usuarios-database-jdbc-url: 'jdbc:sqlserver://expensereportdemosqlserver.database.windows.net;databaseName=AE;encrypt=true;trustServerCertificate=true'
-  ae-usuarios-url: 'https://ae-usuarios:8081'
+  ae-usuarios-url: 'http://ae-usuarios:8081'
   ae-configuraciones-database-jdbc-url: 'jdbc:sqlserver://expensereportdemosqlserver.database.windows.net;databaseName=AE;encrypt=true;trustServerCertificate=true'
   ae-configuraciones-url: 'https://ae-configuraciones:8082'
   ae-reportes-database-jdbc-url: 'jdbc:sqlserver://expensereportdemosqlserver.database.windows.net;databaseName=AE;encrypt=true;trustServerCertificate=true'

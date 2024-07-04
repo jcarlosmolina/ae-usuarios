@@ -30,32 +30,32 @@ spec:
           - name: quarkus.datasource.jdbc.url
             valueFrom:
               configMapKeyRef:
-                name: ae-usuarios-config
-                key: ae-apigateway-database-jdbc-url
+                name: ae-config
+                key: ae-database-jdbc-url
           - name: quarkus.datasource.username
             valueFrom:
               secretKeyRef:
-                name: ae-usuarios-secret
+                name: ae-secret
                 key: db-username
           - name: quarkus.datasource.password
             valueFrom:
               secretKeyRef:
-                name: ae-usuarios-secret
+                name: ae-secret
                 key: db-password
           - name: quarkus.rest-client.ae-apigateway.url
             valueFrom:
               configMapKeyRef:
-                name: ae-usuarios-config
+                name: ae-config
                 key: ae-apigateway-url
           - name: quarkus.rest-client.ae-usuarios.url
             valueFrom:
               configMapKeyRef:
-                name: ae-usuarios-config
+                name: ae-config
                 key: ae-usuarios-url
           - name: quarkus.rest-client.ae-configuraciones.url
             valueFrom:
               configMapKeyRef:
-                name: ae-usuarios-config
+                name: ae-config
                 key: ae-configuraciones-url
           resources:
             requests:
